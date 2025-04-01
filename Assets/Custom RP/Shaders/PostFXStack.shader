@@ -139,6 +139,8 @@ Shader "Hidden/Custom RP/Post FX Stack"
         Pass
         {
             Name "Final Pass"
+            
+            Blend [_FinalSrcBlend] [_FinalDstBlend]
             HLSLPROGRAM
                 #pragma target 3.5
                 #pragma vertex DefaultPassVertex

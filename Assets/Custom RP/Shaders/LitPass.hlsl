@@ -68,7 +68,7 @@ float4 LitPassFragment (Varyings input) : SV_TARGET {
 	float4 base = GetBase(config);
 
 	#if defined(_CLIPPING)
-		clip(base.a - GetCutoff(input.baseUV));
+		clip(base.a - GetCutoff(config));
 	#endif
 
 	Surface surface;
@@ -91,6 +91,7 @@ float4 LitPassFragment (Varyings input) : SV_TARGET {
 	surface.smoothness = GetSmoothness(config);
 	surface.fresnelStrength = GetFresnel(config);
 	surface.dither = InterleavedGradientNoise(input.positionCS.xy, 0);
+	surface.renderingLayerMask = asuint(unity_RenderingLayer.x);
 	surface.depth = -TransformWorldToView(input.positionWS).z;
 	#if defined(_PREMULTIPLY_ALPHA)
 		BRDF brdf = GetBRDF(surface, true);

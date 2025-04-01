@@ -31,6 +31,6 @@ MonoBehaviour:
     other:
       atlasSize: 1024
       filter: 0
-  postFXSettings: {fileID: 0}
+  postFXSettings: {fileID: 11400000, guid: 4b6a828fcaa3ca14f90defc30c758267, type: 2}
   allowHDR: 1
-  colorLUTResolution: 16
+  colorLUTResolution: 64

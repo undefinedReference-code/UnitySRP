@@ -48,7 +48,7 @@ Shader "Custom RP/Lit"
 		#include "../ShaderLibrary/Common.hlsl"
 		#include "LitInput.hlsl"
 		ENDHLSL
-        Blend [_SrcBlend] [_DstBlend]
+        Blend [_SrcBlend] [_DstBlend], One OneMinusSrcAlpha
 		ZWrite [_ZWrite]
         Pass
         {

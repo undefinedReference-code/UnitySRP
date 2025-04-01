@@ -210,7 +210,10 @@ public class Shadows
         var shadowSettings = new ShadowDrawingSettings(
             cullingResults, light.visibleLightIndex,
             BatchCullingProjectionType.Orthographic
-        );
+        )
+        {
+            useRenderingLayerMaskTest = true
+        };
         
         // cascadeCount 是级联的总数目
         int cascadeCount = settings.directional.cascadeCount;
@@ -338,7 +341,10 @@ public class Shadows
         // texelSize: The distance in world space that each pixel of the tile occupies
         ShadowedOtherLight light = shadowedOtherLights[index];
         var shadowSettings = new ShadowDrawingSettings(cullingResults, light.visibleLightIndex,
-            BatchCullingProjectionType.Perspective);
+            BatchCullingProjectionType.Perspective)
+        {
+            useRenderingLayerMaskTest = true
+        };
         
         cullingResults.ComputeSpotShadowMatricesAndCullingPrimitives(light.visibleLightIndex, 
             out Matrix4x4 viewMatrix, out Matrix4x4 projectionMatrix, out ShadowSplitData splitData);
@@ -363,7 +369,10 @@ public class Shadows
     {
         ShadowedOtherLight light = shadowedOtherLights[index];
         var shadowSettings = new ShadowDrawingSettings(cullingResults, light.visibleLightIndex,
-            BatchCullingProjectionType.Perspective);
+            BatchCullingProjectionType.Perspective)
+        {
+            useRenderingLayerMaskTest = true
+        };
         
         // The field of view for cubemap faces is always 90°,
         // thus the world-space tile size at distance 1 is always 2.

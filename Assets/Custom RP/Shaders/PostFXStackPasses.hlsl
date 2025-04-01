@@ -75,8 +75,8 @@ float4 BloomAddPassFragment (Varyings input) : SV_TARGET {
         lowRes = GetSource(input.screenUV).rgb;
     }
     // highRes no upsampling; output size is equal to highRes
-    float3 highRes = GetSource2(input.screenUV).rgb;
-    return float4(_BloomIntensity * lowRes + highRes, 1.0);
+    float4 highRes = GetSource2(input.screenUV);
+    return float4(_BloomIntensity * lowRes + highRes.rgb, highRes.a);
 }
 
 float4 BloomHorizontalPassFragment (Varyings input) : SV_TARGET {
@@ -185,9 +185,9 @@ float4 BloomScatterFinalPassFragment (Varyings input) : SV_TARGET {
         lowRes = GetSource(input.screenUV).rgb;
     }
     
-    float3 highRes = GetSource2(input.screenUV).rgb;
-    lowRes += highRes - ApplyBloomThreshold(highRes);
-    return float4(lerp(highRes, lowRes, _BloomIntensity), 1);
+    float4 highRes = GetSource2(input.screenUV);
+    lowRes += highRes.rgb - ApplyBloomThreshold(highRes.rgb);
+    return float4(lerp(highRes.rgb, lowRes, _BloomIntensity), highRes.a);
 }
 
 float4 _ColorAdjustments;

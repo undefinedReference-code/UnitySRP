@@ -20,8 +20,10 @@ public partial class CameraRenderer
     static ShaderTagId 
         unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit"),
         litShaderTagId = new ShaderTagId("CustomLit");
-    
+
     bool useHDR;
+    
+    static CameraSettings defaultCameraSettings = new CameraSettings();
     
     public void Render(ScriptableRenderContext context, Camera camera, bool allowHDR, bool useDynamicBatching, 
         bool useGPUInstancing, bool useLightsPerObject, ShadowSettings shadowSettings,
@@ -29,6 +31,15 @@ public partial class CameraRenderer
     {
         this.context = context;
         this.camera = camera;
+        
+        var crpCamera = camera.GetComponent<CustomRenderPipelineCamera>();
+        CameraSettings cameraSettings =
+            crpCamera ? crpCamera.Settings : defaultCameraSettings;
+        
+        if (cameraSettings.overridePostFX) {
+            postFXSettings = cameraSettings.postFXSettings;
+        }
+        
         PrepareBuffer();
         PrepareForSceneWindow();
         if (!Cull(shadowSettings.maxDistance))
@@ -40,11 +51,12 @@ public partial class CameraRenderer
         
         buffer.BeginSample(SampleName);
         ExecuteBuffer();
-        lighting.Setup(context, cullingResults, useLightsPerObject, shadowSettings);
-        postFXStack.Setup(context, camera, postFXSettings, useHDR, colorLUTResolution);
+        lighting.Setup(context, cullingResults, useLightsPerObject, shadowSettings,
+            cameraSettings.maskLights ? cameraSettings.renderingLayerMask : -1);
+        postFXStack.Setup(context, camera, postFXSettings, useHDR, colorLUTResolution, cameraSettings.finalBlendMode);
         buffer.EndSample(SampleName);
         Setup();
-        DrawVisibleGeometry(useDynamicBatching, useGPUInstancing, useLightsPerObject);
+        DrawVisibleGeometry(useDynamicBatching, useGPUInstancing, useLightsPerObject, cameraSettings.renderingLayerMask);
         DrawUnsupportedShaders();
         DrawGizmosBeforeFX();
         if (postFXStack.IsActive)
@@ -55,7 +67,7 @@ public partial class CameraRenderer
         Cleanup();
         Submit();
     }
-    void DrawVisibleGeometry(bool useDynamicBatching, bool useGPUInstancing, bool useLightsPerObject)
+    void DrawVisibleGeometry(bool useDynamicBatching, bool useGPUInstancing, bool useLightsPerObject, int renderingLayerMask)
     {
         PerObjectData lightsPerObjectFlags =
             useLightsPerObject ? PerObjectData.LightData | PerObjectData.LightIndices : PerObjectData.None;
@@ -71,7 +83,7 @@ public partial class CameraRenderer
                             PerObjectData.OcclusionProbeProxyVolume | lightsPerObjectFlags
         };
         drawingSettings.SetShaderPassName(1, litShaderTagId);
-        var filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
+        var filteringSettings = new FilteringSettings(RenderQueueRange.opaque, renderingLayerMask: (uint)renderingLayerMask);
 
         context.DrawRenderers(cullingResults, ref drawingSettings, ref filteringSettings);
 

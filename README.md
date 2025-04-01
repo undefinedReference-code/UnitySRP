@@ -19,3 +19,10 @@
     - Bloom
     - ToneMapping
     - LUT color grading
+
+- MultiCamera
+    - Alpha blend between multi-camera
+    - Rendering layer editor GUI
+    - Rendering layer between object and light
+    - Rendering layer between camera and light
+    - Rendering layer between camera and object 

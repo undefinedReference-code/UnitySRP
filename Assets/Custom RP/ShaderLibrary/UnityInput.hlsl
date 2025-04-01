@@ -6,6 +6,10 @@ CBUFFER_START(UnityPerDraw)
 	float4x4 unity_WorldToObject;
 	float4 unity_LODFade;
 	real4 unity_WorldTransformParams;
+
+	// rendering layer mask of object
+	float4 unity_RenderingLayer;
+
 	// data for light per object
 	real4 unity_LightData;
 	real4 unity_LightIndices[2];
